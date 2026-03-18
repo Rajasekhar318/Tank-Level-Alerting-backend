@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fuel.project.entity.Generator;
 import com.fuel.project.service.GeneratorService;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/generators")
 public class GeneratorController {

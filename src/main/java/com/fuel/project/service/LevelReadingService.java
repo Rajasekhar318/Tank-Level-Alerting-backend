@@ -14,7 +14,8 @@ import com.fuel.project.entity.LevelReading;
 import com.fuel.project.repository.AlertRepository;
 import com.fuel.project.repository.GeneratorRepository;
 import com.fuel.project.repository.LevelReadingRepository;
- 
+import com.fuel.project.util.FuelCalculationUtil;
+
 @Service
 public class LevelReadingService {
  
@@ -67,9 +68,9 @@ public class LevelReadingService {
      
             float previousLevel = previousReading.get().getCurrentFuellevel();
      
-            float drop = previousLevel - currentLevel;
+//            float drop = FuelCalculationUtil.calculateFuelDrop(previousLevel, currentLevel);
      
-            if (drop >= 100) {   // threshold
+            if (FuelCalculationUtil.isSuddenDrop(previousLevel, currentLevel, 100)) {   // threshold
      
                 Alert alert = new Alert();
                 alert.setGeneratorId(generator.getGeneratorId());

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fuel.project.entity.LevelReading;
 import com.fuel.project.service.LevelReadingService;
  
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/readings")
 public class LevelReadingController {

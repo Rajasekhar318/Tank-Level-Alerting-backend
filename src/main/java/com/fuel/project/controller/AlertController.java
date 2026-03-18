@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fuel.project.entity.Alert;
 import com.fuel.project.service.AlertService;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/alerts")
 public class AlertController {
