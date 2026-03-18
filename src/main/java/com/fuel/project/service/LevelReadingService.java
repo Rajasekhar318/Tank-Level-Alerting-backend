@@ -14,7 +14,6 @@ import com.fuel.project.entity.LevelReading;
 import com.fuel.project.repository.AlertRepository;
 import com.fuel.project.repository.GeneratorRepository;
 import com.fuel.project.repository.LevelReadingRepository;
-import com.fuel.project.util.FuelCalculationUtil;
 
 @Service
 public class LevelReadingService {
@@ -65,19 +64,39 @@ public class LevelReadingService {
      
         // SUDDEN DROP LOGIC
         if (previousReading.isPresent()) {
-     
-            float previousLevel = previousReading.get().getCurrentFuellevel();
-     
-//            float drop = FuelCalculationUtil.calculateFuelDrop(previousLevel, currentLevel);
-     
-            if (FuelCalculationUtil.isSuddenDrop(previousLevel, currentLevel, 100)) {   // threshold
-     
-                Alert alert = new Alert();
-                alert.setGeneratorId(generator.getGeneratorId());
-                alert.setLevelreadingId(savedReading.getLevelreadingId());
-                alert.setAlertType("SUDDEN_DROP_ALERT");
-     
-                alertRepository.save(alert);
+            
+            LevelReading prev = previousReading.get();
+         
+            float previousLevel = prev.getCurrentFuellevel();
+            float currentLevel1 = reading.getCurrentFuellevel();
+         
+            LocalDateTime previousTime = prev.getCurrentTimestamp();
+            LocalDateTime currentTime = reading.getCurrentTimestamp();
+         
+            // calculate time difference in seconds
+            long timeDiff = java.time.Duration.between(previousTime, currentTime).toMinutes();
+         
+            if (timeDiff > 0) {
+         
+                // level change
+                float levelDiff = previousLevel - currentLevel1;
+         
+                // rate of change (level drop per second)
+                float currentRate = levelDiff / timeDiff;
+                float tankCapacity=generator.getGeneratorTotalCapacity();
+         
+                // expected normal rate (define threshold)
+                float normalRate = (float) (((tankCapacity/1000)*500)/60);   // adjust based on tank behaviour
+         
+                if (currentRate > normalRate) {
+         
+                    Alert alert = new Alert();
+                    alert.setGeneratorId(generator.getGeneratorId());
+                    alert.setLevelreadingId(savedReading.getLevelreadingId());
+                    alert.setAlertType("SUDDEN_DROP_ALERT");
+         
+                    alertRepository.save(alert);
+                }
             }
         }
      
